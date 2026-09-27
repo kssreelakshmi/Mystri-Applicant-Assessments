@@ -30,6 +30,7 @@ async function refresh() {
   document.querySelector('#page-error').textContent = '';
 }
 
+
 async function submitImport(form) {
   const feedback = form.querySelector('.feedback');
   const button = form.querySelector('button');
@@ -52,3 +53,7 @@ async function submitImport(form) {
 document.querySelector('#status').addEventListener('change', () => refresh().catch(e => { document.querySelector('#page-error').textContent = e.message; }));
 document.querySelectorAll('form[data-kind]').forEach(form => form.addEventListener('submit', e => { e.preventDefault(); submitImport(form); }));
 refresh().catch(e => { document.querySelector('#page-error').textContent = e.message; });
+document.querySelector('#exportBtn').addEventListener('click', function () {
+    const status = document.querySelector('#status').value;
+    this.href = `/api/export?status=${status}`;
+});

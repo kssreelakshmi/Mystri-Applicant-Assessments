@@ -35,12 +35,12 @@ def overview(db):
     }}
 
 
-def export_csv(db):
+def export_csv(db, status='all'):
     output = io.StringIO(newline='')
     fields = ['customer_id', 'invoice_number', 'amount', 'paid', 'balance', 'status']
     writer = csv.DictWriter(output, fieldnames=fields)
     writer.writeheader()
-    for row in invoices(db):
+    for row in invoices(db, status):
         item = {k: row[k] for k in fields}
         for key in ('amount', 'paid', 'balance'):
             item[key] = f"{int(item[key] * 100) / 100:.2f}"

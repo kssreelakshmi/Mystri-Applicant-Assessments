@@ -36,7 +36,8 @@ def make_server(db_path, web_dir, port):
                     status = parse_qs(url.query).get('status', ['all'])[0]
                     return self.send(200, reporting.invoices(db, status))
                 if url.path == '/api/export':
-                    return self.send(200, reporting.export_csv(db), 'text/csv; charset=utf-8')
+                    status = parse_qs(url.query).get('status', ['all'])[0]
+                    return self.send(200, reporting.export_csv(db,status), 'text/csv; charset=utf-8')
                 return self.send(404, {'error': 'Not found'})
             except ValueError as exc:
                 self.send(400, {'error': str(exc)})
@@ -46,6 +47,7 @@ def make_server(db_path, web_dir, port):
         def do_POST(self):
             url = urlsplit(self.path)
             if url.path != '/api/import':
+
                 return self.send(404, {'error': 'Not found'})
             origin = self.headers.get('Origin')
             if origin and origin not in (f'http://127.0.0.1:{self.server.server_port}',
