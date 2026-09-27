@@ -7,7 +7,7 @@ def invoices(db, status='all'):
         raise ValueError('status must be all, open or paid')
     data = db.execute('''
         SELECT i.id, i.customer_id, c.name AS customer_name, i.invoice_number,
-               i.amount, i.due_date, COALESCE(SUM(p.amount), 0) AS paid
+               i.amount, i.due_date, COALESCE(ROUND(SUM(p.amount), 2), 0) AS paid
         FROM invoices i JOIN customers c ON c.customer_id=i.customer_id
         LEFT JOIN payments p ON p.invoice_id=i.id
         GROUP BY i.id ORDER BY i.id
