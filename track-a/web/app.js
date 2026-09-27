@@ -38,10 +38,15 @@ async function submitImport(form) {
   feedback.textContent = 'Importing…';
   try {
     const csv = await form.querySelector('input').files[0].text();
-    await fetch(`/api/import?kind=${form.dataset.kind}`, {
+    const response = await fetch(`/api/import?kind=${form.dataset.kind}`, {
       method: 'POST', headers: { 'Content-Type': 'text/csv' }, body: csv
     });
-    feedback.textContent = 'Import complete. Your records are ready.';
+    const body = await response.json();
+    if (!response.ok) throw new Error(body.error || 'Import failed.');
+    const {imported,skipped,rejected,errors} = body;
+    let message = `Imported ${imported}, Skipped ${skipped}, Rejected ${rejected}.`;
+    if(rejected>0)  message += '\n' + errors.map(e => `Line ${e.line}: ${e.reason}`).join(';\n');
+    feedback.textContent = message;
     await refresh();
   } catch (error) {
     feedback.textContent = `Import failed: ${error.message}`;
